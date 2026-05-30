@@ -183,10 +183,12 @@ async function openColabNotebook(headless: boolean = false) {
 
 (async () => {
   const arg = process.argv[2];
+  const subArg = process.argv[3];
 
   if (arg === 'colab') {
-    console.log('Запуск режима: Открытие Colab ноутбука...');
-    await openColabNotebook(false);
+    const isHeadless = subArg === 'less';
+    console.log(`Запуск режима: Открытие Colab ноутбука... (${isHeadless ? 'Безголовый режим (less)' : 'Видимый режим'})`);
+    await openColabNotebook(isHeadless);
   } else if (arg === 'cookie') {
     console.log('Запуск режима: Сохранение куки Google...');
     await saveAuth(false);
