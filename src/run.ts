@@ -70,7 +70,6 @@ async function run(headless: boolean = true) {
         console.log('Браузер закрыт.');
     }
 }
-}
 
 (async () => {
   await run(false);
