@@ -47,66 +47,29 @@ export async function scren(page: Page, caption: string) {
 }
 
 async function run(headless: boolean = true) {
-    let allText = '';
     const { browser, page } = await launchBrowser(headless);
-    const raw = process.argv[2] || "";
-    const ids = raw.split("|");
 
-    for (let i = 0; i < ids.length; i++) {
-        const id = ids[i];
-        console.log(`Обрабатываю ${i + 1}/${ids.length}:`, id);
-
-        try {
-        await page.goto(`https://youtubetotranscript.com/transcript?v=${id}`, { timeout: 60000 });
+    try {
+        console.log('Перехожу на checkip.amazonaws.com...');
+        await page.goto('https://checkip.amazonaws.com/', { timeout: 60000 });
         await page.waitForSelector('body', { timeout: 60000 });
-        try {
-            const text = await page.locator('//div[@id="transcript"]').innerText({ timeout: 60000 });
-            allText += text + '\n\n'; // добавляем с разделением
-        console.log(text);
-        } catch {
-            console.log(`Транскрипт не найден для видео ${id}`);
-        }
+        
+        // Небольшая пауза для уверенности в загрузке
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-        } catch (err) {
-            console.error(`Не удалось загрузить видео ${id}:`, err);
-            continue; // переходим к следующему видео
-        }
+        const ip = await page.evaluate(() => document.body.innerText.trim());
+        console.log('Публичный IP:', ip);
 
+        await sendToTelegram(`Ваш публичный IP: ${ip}`);
+        await scren(page, `Ваш публичный IP: ${ip}`);
 
+    } catch (err) {
+        console.error('Ошибка в run:', err);
+    } finally {
+        await browser.close();
+        console.log('Браузер закрыт.');
     }
-    const filePath = 'all_transcripts.txt';
-    fs.writeFileSync(filePath, allText, 'utf-8');
-    console.log('Все транскрипты сохранены в файл', filePath);
-
-    await sendFileToTelegram(filePath, 'Все транскрипты видео');
-
-  //try {
-   // await page.goto('https://checkip.amazonaws.com/');
-   // await page.
-    //}
-  //try {
-   // await page.goto('https://checkip.amazonaws.com/');
-   // await page.waitForSelector('body');
-   // await new Promise(resolve => setTimeout(resolve, 2000));
-   // const ip = await page.evaluate(() => document.body.innerText.trim());
-   // console.log('Публичный IP:', ip);
-   // await sendToTelegram(`Ваш публичный IP: ${ip}`);
-   // await scren(page, `Ваш публичный IP: ${ip}`);
-
-    //await page.goto('https://bot.sannysoft.com/');
-   // await page.goto('https://youtubetotranscript.com/transcript?v=R7cgUzfHW-I');
-   // await page.waitForSelector('body');
-   // await new Promise(resolve => setTimeout(resolve, 2000));
-
-   // const text = await page.locator('//div[@id="transcript"]').innerText();
-   // console.log(text);
-  //  await scren(page, `Ваш`);
-  //} catch (err) {
-   // console.error('Ошибка в run:', err);
-  //} finally {
-    //await browser.close();
-  //}
-
+}
 }
 
 (async () => {
