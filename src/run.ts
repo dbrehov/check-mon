@@ -161,8 +161,8 @@ async function openColabNotebook(headless: boolean = false) {
                 
                 console.log('Команды запуска отправлены.');
                 
-                // Ждем 3 секунды перед скриншотом
-                await new Promise(resolve => setTimeout(resolve, 3000));
+                // Ждем 10 секунд, чтобы код в ноутбуке успел поработать перед скриншотом
+                await new Promise(resolve => setTimeout(resolve, 10000));
                 await scren(targetPage, 'Результат попытки запуска через горячие клавиши');
             } catch (menuErr) {
                 console.error('Ошибка при нажатии горячих клавиш:', menuErr);
