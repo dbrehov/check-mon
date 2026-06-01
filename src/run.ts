@@ -150,7 +150,7 @@ async function openColabNotebook(headless: boolean = false) {
             try {
                 console.log('Активирую окно ноутбука (клик по центру)...');
                 await targetPage.mouse.click(600, 400); // Клик в область документа
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 3000));
 
                 console.log('Попытка запустить все ячейки через горячие клавиши...');
                 
@@ -161,8 +161,8 @@ async function openColabNotebook(headless: boolean = false) {
                 
                 console.log('Команды запуска отправлены.');
                 
-                // Ждем чуть дольше, чтобы увидеть начало выполнения на скриншоте
-                await new Promise(resolve => setTimeout(resolve, 8000));
+                // Ждем 3 секунды перед скриншотом
+                await new Promise(resolve => setTimeout(resolve, 3000));
                 await scren(targetPage, 'Результат попытки запуска через горячие клавиши');
             } catch (menuErr) {
                 console.error('Ошибка при нажатии горячих клавиш:', menuErr);
