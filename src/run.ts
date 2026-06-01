@@ -148,31 +148,24 @@ async function openColabNotebook(headless: boolean = false) {
 
             // 5. Запуск кода
             try {
-                console.log('Активирую окно ноутбука...');
-                await targetPage.click('body');
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                console.log('Активирую окно ноутбука (клик по центру)...');
+                await targetPage.mouse.click(600, 400); // Клик в область документа
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
-                console.log('Открываю командную палитру (Ctrl+Shift+P)...');
-                await targetPage.keyboard.press('Control+Shift+P');
+                console.log('Попытка запустить все ячейки через горячие клавиши...');
                 
-                try {
-                    console.log('Ожидание появления элемента "Run all cells"...');
-                    // Ждем, пока в меню появится пункт "Run all cells"
-                    await targetPage.waitForSelector('text=Run all cells', { timeout: 15000 });
-                    console.log('Элемент найден! Нажимаю Enter...');
-                    await targetPage.keyboard.press('Enter');
-                } catch (err) {
-                    console.error('Не удалось найти "Run all cells" в палитре, пробую Ctrl+F9...');
-                    await targetPage.keyboard.press('Control+F9');
-                }
+                // Пробуем оба варианта (Ctrl и Cmd) для надежности
+                await targetPage.keyboard.press('Control+F9');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await targetPage.keyboard.press('Meta+F9'); 
                 
-                console.log('Команда запуска отправлена.');
+                console.log('Команды запуска отправлены.');
                 
-                // Ждем 10 секунд, чтобы код в ноутбуке успел поработать перед скриншотом
-                await new Promise(resolve => setTimeout(resolve, 10000));
-                await scren(targetPage, 'Результат запуска через Run All');
+                // Ждем чуть дольше, чтобы увидеть начало выполнения на скриншоте
+                await new Promise(resolve => setTimeout(resolve, 8000));
+                await scren(targetPage, 'Результат попытки запуска через горячие клавиши');
             } catch (menuErr) {
-                console.error('Ошибка при нажатии горячих клавиш:', menuErr);
+                console.error('Ошибка при нажатии горячих клавиши:', menuErr);
             }
 
         } else {
